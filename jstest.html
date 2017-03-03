@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Test</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<h1>Printer Status Fetch</h1>
+<script>
+
+var run;
+
+$(document).ready(function(){
+
+
+
+    $("#start_button").click(function(){
+        post_request(document.getElementById("id_input_box").value, document.getElementById("command_input_box").value);
+        run = setInterval(function(){
+            post_request(document.getElementById("id_input_box").value, document.getElementById("command_input_box").value); }, 3000);
+    	//post_request(this.id, document.getElementById("input_box").value);
+        });
+    $("#stop_button").click(function(){
+            clearInterval(run);
+            run = null;
+        })
+    });
+
+function post_request(printer_id, commands)
+{
+
+	//url = "https://studarin.ngrok.io/server/status/" + get_printer_id(printer_id);
+    var server_url = "https://studarin.ngrok.io/printer";
+
+    //console.log(server_url);
+    $.ajax({
+        url:server_url,
+        type:"POST",
+        data:JSON.stringify({
+            printer_id: printer_id,
+            commands: {
+                            job_name: null, // good
+                            time_remaining: null, //good
+                            progress: null, //good
+                            bed_temp: null, //good
+                            extruder_temps: null, // good
+                        }
+                    }),
+        contentType:"application/json; charset=utf-8",
+        success:function(data){
+            var received_request = JSON.stringify(data, null, 2);
+            document.getElementById("output_box").value = received_request;
+        }
+    }).fail(function(xhr, textStatus, error){
+        var received_error = $.parseJSON(xhr.responseText);
+        clearInterval(run);
+        run = null;
+        alert(xhr.status + " Error:\n" + received_error['message']);
+    });
+
+    // $.post(
+    //     server_url,
+    //     JSON.stringify({    printer_id: printer_id,
+    //                         commands: {
+    //                                     job_name: null, // name is "name"?
+    //                                     time_remaining: null, //good
+    //                                     progress: null, //good
+    //                                     bed_temp: null, //good
+    //                                     extruder_temps: null, // raises valueError
+    //                                 }
+    //                             }),
+    //
+    //         //commands: commands},
+    //     function(data) {
+    //         //var received = jQuery.parseJSON(JSON.stringify(data);
+    //         //var received = JSON.stringify(data); // this line works to post the string
+    //         //var received_request = $.parseJSON(JSON.stringify(data));
+    //         //document.getElementById("output_box").value = received_request['message'];
+    //         //alert("Data: " + data + "\nStatus: " + status);
+    //
+    //         var received_request = JSON.stringify(data);
+    //         document.getElementById("output_box").value = received_request;
+    //
+    //     }
+    // ).fail(function(xhr, textStatus, error){
+    //     var received_error = $.parseJSON(xhr.responseText);
+    //     clearInterval(run);
+    //     alert(xhr.status + " Error:\n" + received_error['message']);
+    // });
+
+
+};
+
+</script>
+
+<!--
+<button id="Darin1" style="display:block">Darin Printerbot Status</button>
+<button id="Stu" style="display:block">Stu Printer Status</button>
+<button id="Darin2" style="display:block">Darin Ultimaker Status</button>
+-->
+Printer ID <input id="id_input_box" type = "text">
+Command <input id="command_input_box" type="text">
+<!-- <button id="send_command_button" style = "display:block">Send Request</button> -->
+<button id="start_button" style = "display:block">Start</button>
+<button id="stop_button" style = "display:block">Stop</button>
+
+<div>
+<textarea id="output_box" type="text" rows="50" readonly="true"></textarea>
+</div>
+
+</html>

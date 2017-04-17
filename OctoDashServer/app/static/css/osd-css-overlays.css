@@ -1,0 +1,84 @@
+.overlay {
+    display: none;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; /* Sit on top */
+    background-color: rgb(0,0,0); /* Black fallback color */
+    background-color: rgba(0,0,0, 0.9); /* Black w/opacity */
+    overflow-x: hidden;
+    -webkit-animation-name: fadeIn;
+    -webkit-animation-duration: 0.3s;
+    -moz-animation-name: fadeIn;
+    -moz-animation-duration: 0.3s;
+    animation-name: fadeIn;
+    animation-duration: 0.3s;
+}
+
+/* Position the content inside the overlay */
+.info_overlay_content {
+    position: relative;
+    -webkit-animation-name: slideIn;
+    -webkit-animation-duration: 0.3s;
+    -moz-animation-name: slideIn;
+    -moz-animation-duration: 0.3s;
+    animation-name: slideIn;
+    animation-duration: 0.3s;
+}
+
+.info_overlay_content .text_line {
+    display: block;
+    padding: 8px;
+    overflow:hidden;
+}
+
+.info_overlay_content .text_line div {
+    display:inline-block;
+    margin-right: 3px;
+    font-size: 16px;
+}
+
+.settings_overlay {
+    height: 100px;
+}
+
+/* Position the content inside the overlay */
+.settings_overlay_content {
+    position: relative;
+    text-align: center; /* Centered text/links */
+    -webkit-animation-name: slideIn;
+    -webkit-animation-duration: 0.3s;
+    -moz-animation-name: slideIn;
+    -moz-animation-duration: 0.3s;
+    animation-name: slideIn;
+    animation-duration: 0.3s;
+    display: inline-flex;
+    justify-content: space-around;
+    align-items: center;
+    -webkit-align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+/* Add Animation */
+@-webkit-keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}
+
+@keyframes slideIn {
+    from {bottom: -300px; opacity: 0}
+    to {bottom: 0; opacity: 1}
+}
+
+@-webkit-keyframes fadeIn {
+    from {opacity: 0}
+    to {opacity: 1}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0}
+    to {opacity: 1}
+}

@@ -15,13 +15,13 @@ class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SERVER_NAME = 'localhost:6286'
+    #SERVER_NAME = '0.0.0.0:6286'
 
 class ProductionConfig(Config):
     """
     Production configurations
     """
-    SERVER_NAME = 'localhost:6286'
+    SERVER_NAME = '0.0.0.0:6286'
 
     DEBUG = False
 

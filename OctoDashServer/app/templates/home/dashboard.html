@@ -1,0 +1,20 @@
+<!-- app/templates/home/dashboard.html -->
+
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block body %}
+<div class="nav_bar" id="nav_bar"></div>
+<div class="octo_slack_modal" id="octo_slack_modal"></div>
+<div class="snapshot_modal" id="snapshot_modal"></div>
+<div class = "shell">
+    <div class="container" id="container"></div>
+</div><!--./shell-->
+
+<script>
+    createNavBar();
+    createOctoSlackModal();
+    createSnapshotModal();
+    createSecondLevelObjectEventListeners();
+    startWebSocket("http://155.97.12.120:8080/sockJS");
+</script>
+{% endblock %}

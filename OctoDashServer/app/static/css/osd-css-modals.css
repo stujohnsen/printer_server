@@ -1,0 +1,114 @@
+.octo_slack_modal {
+    cursor:pointer;
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: hidden; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.octo_slack_modal_content {
+    position: relative;
+    display: block;
+    background-color: #fefefe;
+    margin: 100px auto;
+    padding: 2px;
+    width: 80%;
+    height: 80%;
+    border: 2px solid #888;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-animation-name: animatetop;
+    -moz-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    -moz-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    overflow:hidden;
+}
+
+.octo_slack_modal_content iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.snapshot_modal {
+    cursor:pointer;
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: hidden;
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    text-align: center;
+}
+
+.snapshot_modal_content {
+    position: relative;
+    display: inline-block;
+    background-color: #fefefe;
+    margin: 100px auto;
+    padding: 0;
+    border: 2px solid #888;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -moz-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    -moz-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+.snapshot_modal_content img {
+    display:block;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+
+/* The Close Button */
+.close_button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close_button:hover,
+.close_button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+    from { top: -300px; opacity: 0 }
+    to { top: 0; opacity: 1 }
+}
+
+@keyframes animatetop {
+    from { top: -300px; opacity: 0 }
+    to { top: 0; opacity: 1 }
+}
+
+/* MEDIA QUERIES */
+@media screen and (max-width: 768px) {
+    .snapshot_modal_content {
+        width: 90%;
+    }
+    .snapshot_modal_content img {
+        width:100%;
+    }
+}

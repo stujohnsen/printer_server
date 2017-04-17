@@ -12,6 +12,8 @@ class Printer_db(Base):
     camera_rotation = Column(Integer)
     printer_name = Column(String(512))
     printer_type = Column(String(512))
+    horizontal_flip = Column(Boolean)
+    vertical_flip = Column(Boolean)
 
     def __repr__(self):
         return '<Printer_info %r>' % self.printer_id
@@ -49,7 +51,9 @@ class Printer_db(Base):
                     'x_api_key': str(p.x_api_key),
                     'camera_rotation': str(p.camera_rotation),
                     'printer_name': str(p.printer_name),
-                    'printer_type': str(p.printer_type)
+                    'printer_type': str(p.printer_type),
+                    'horizontal_flip' : str(p.horizontal_flip),
+                    'vertical_flip' : str(p.vertical_flip),
                     }
             result[str(p.printer_id)] = info
         return result
@@ -68,7 +72,9 @@ def get_on_startup():
                  'x_api_key' : str(p.x_api_key),
                  'camera_rotation' : str(p.camera_rotation),
                  'printer_name' : str(p.printer_name),
-                 'printer_type' : str(p.printer_type)
+                 'printer_type' : str(p.printer_type),
+                 'horizontal_flip' : str(p.horizontal_flip),
+                 'vertical_flip' : str(p.vertical_flip),
                 }
         result[str(p.printer_id)] = info
     return result

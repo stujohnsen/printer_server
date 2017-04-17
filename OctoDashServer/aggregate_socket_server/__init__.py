@@ -25,7 +25,9 @@ class SiteConnectionSocket(SockJSConnection):
                                                 'is_connected' : current_printer_client.is_connected,
                                                 'camera_rotation' : current_printer_client.camera_rotation,
                                                 'printer_name' : current_printer_client.printer_name,
-                                                'printer_type' : current_printer_client.printer_type
+                                                'printer_type' : current_printer_client.printer_type,
+                                                'horizontal_flip' : current_printer_client.horizontal_flip,
+                                                'vertical_flip' : current_printer_client.vertical_flip
                                                 }
         to_send = json.dumps({'message_type' : 'on_server_connect',
                               'num_printers' : str(len(available_printers)),
@@ -59,7 +61,9 @@ def start_socket_server():
                 'x_api_key': str(p.x_api_key),
                 'camera_rotation': str(p.camera_rotation),
                 'printer_name': str(p.printer_name),
-                'printer_type': str(p.printer_type)
+                'printer_type': str(p.printer_type),
+                'horizontal_flip': str(p.horizontal_flip),
+                'vertical_flip': str(p.vertical_flip),
                 }
         printer_set[str(p.printer_id)] = info
 
@@ -85,19 +89,23 @@ def start_socket_server():
                                 current_info['x_api_key'],
                                 current_info['camera_rotation'],
                                 current_info['printer_name'],
-                                current_info['printer_type'])
+                                current_info['printer_type'],
+                                current_info['horizontal_flip'],
+                                current_info['vertical_flip'])
         available_printers[current_info['printer_id']] = client
         client_thread = threading.Thread(target=client.connect_client, args=())
         client_thread.start()
 
 
 class client_wrapper(object):
-    def __init__(self, printer_id, url, x_api_key, camera_rotation, printer_name, printer_type):
+    def __init__(self, printer_id, url, x_api_key, camera_rotation, printer_name, printer_type, horizontal_flip, vertical_flip):
         self.printer_id = printer_id
         self.client = octoprint_client.Client("http://" + url, x_api_key)
         self.camera_rotation = camera_rotation
         self.printer_name = printer_name
         self.printer_type = printer_type
+        self.horizontal_flip = horizontal_flip
+        self.vertical_flip = vertical_flip
         self.socket = None
         self.is_connected = False
 

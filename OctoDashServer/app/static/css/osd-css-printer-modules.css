@@ -1,0 +1,94 @@
+.printer_module {
+    background-color: gray;
+    margin: 15px 0;
+    border: 5px solid gray;
+    border-radius: 5px;
+}
+
+.offline {
+    background-color: gray;
+    border: 5px solid gray;
+}
+
+.error {
+    background-color: red;
+    background-color: rgb(204, 0, 0);
+    border: 5px solid red;
+    border: 5px solid rgb(204, 0, 0);
+}
+
+.idle {
+    background-color: green;
+    background-color: rgb(55, 170, 35);
+    border: 5px solid green;
+    border: 5px solid rgb(55, 170, 35);
+}
+
+.paused {
+    background-color: yellow;
+    background-color: rgb(236, 227, 24);
+    border: 5px solid yellow;
+    border: 5px solid rgb(236, 227, 24);
+}
+
+.printing {
+    background-color: cyan;
+    background-color: rgb(14, 167, 194);
+    border: 5px solid cyan;
+    border: 5px solid rgb(14, 167, 194);
+}
+
+.printer_module .printer_name {
+    width: 100%;
+    text-align: center;
+    font-size: 30px;
+    color: white;
+    padding: 0 0 5px 0;
+}
+
+.printer_module .snapshot_wrapper {
+    position: relative;
+    width: 100%;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    overflow: hidden;
+}
+
+.printer_module .snapshot {
+    width: 100%;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+}
+
+.printer_module .status {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    /*transition-delay: 0.1s;*/
+}
+
+.progress {
+    position: relative;
+    margin: 10px 5px 5px 5px;
+}
+
+.toolbar {
+    position: relative;
+    display: inline-flex;
+    justify-content: space-around;
+    align-items: center;
+    -webkit-align-items: center;
+    width: 100%;
+    height: 50px;
+    background-color: black;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+}
+
+.icon {
+    position: relative;
+    width: 35px;
+    height: 35px;
+}

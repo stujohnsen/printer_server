@@ -129,7 +129,7 @@ def assign_user(id):
     if user.is_admin:
         abort(403)
 
-    form = UswerAssignForm(obj=user)
+    form = UserAssignForm(obj=user)
     if form.validate_on_submit():
         user.role = form.role.data
         db.session.add(user)

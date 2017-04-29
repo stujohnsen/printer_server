@@ -11,10 +11,12 @@
 </div><!--./shell-->
 
 <script>
-    createNavBar();
+    //createNavBar();
     createOctoSlackModal();
     createSnapshotModal();
     createSecondLevelObjectEventListeners();
     startWebSocket("http://155.97.12.120:8080/sockJS");
+    // Snapshot update interval
+    window.setInterval(updateSnapshotViews, 3000);
 </script>
 {% endblock %}

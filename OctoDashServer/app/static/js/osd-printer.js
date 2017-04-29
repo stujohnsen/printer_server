@@ -33,6 +33,10 @@ printer.prototype.onSocketConnect = function(message) {
     console.log(this.name + " socket connected successfully.");
 };
 
+printer.prototype.onSocketReceiveHeartbeat = function(message) {
+    // console.log(this.name + " heartbeat.");
+};
+
 printer.prototype.onSocketReceiveCurrent = function(message) {
     // console.log(this.name + " received a current message.");
     this.printerModule.updatePrinterStatus(message);

@@ -58,7 +58,11 @@ class Printer_db(Base):
             result[str(p.printer_id)] = info
         return result
 
-engine = create_engine('mysql://root:releasethe@localhost:3306/octoslackdb', echo=False)
+# this code has been commented out for security reasons
+# in the running version, it contains the database connection info
+# This code normally connects via a python config file with the appropriate information
+# the config file has also been omitted from our solution for security reasons
+engine = create_engine('REPLACE THIS WITH DATABASE INFORMATION', echo=False)
 printers_table = Printer_db.__table__
 metadata = Base.metadata
 metadata.create_all(engine)
@@ -78,4 +82,3 @@ def get_on_startup():
                 }
         result[str(p.printer_id)] = info
     return result
-

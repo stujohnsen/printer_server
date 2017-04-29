@@ -1,12 +1,14 @@
-import json, threading
+import json, threading, Queue
 import octoprint_client
 from sockjs.tornado import SockJSRouter, SockJSConnection
 from tornado import web, ioloop
 from sqlalchemy.orm import sessionmaker
 
-import models
-
+main_alive = False
+restart_main = False
 available_printers = {}
+client_threads = {}
+message_queue = Queue.Queue()
 
 class SiteConnectionSocket(SockJSConnection):
     """Echo connection implementation"""
@@ -27,76 +29,31 @@ class SiteConnectionSocket(SockJSConnection):
                                                 'printer_name' : current_printer_client.printer_name,
                                                 'printer_type' : current_printer_client.printer_type,
                                                 'horizontal_flip' : current_printer_client.horizontal_flip,
-                                                'vertical_flip' : current_printer_client.vertical_flip
+                                                'vertical_flip' : current_printer_client.vertical_flip,
                                                 }
         to_send = json.dumps({'message_type' : 'on_server_connect',
                               'num_printers' : str(len(available_printers)),
                               'message' : printer_info_to_send})
         self.send(to_send)
 
-    def on_message(self, msg):
-        # For every incoming message, broadcast it to all clients
-        self.broadcast(self.clients, msg)
+    def on_message(self, message):
+        pass
+        # this method has been removed for the time being. In future implementation,
+        # it will need to process incoming messages from web clients and
+        # make appropriate printer requests and database changes.
 
     def on_close(self):
-        # If client disconnects, remove him from the clients list
+        # If client disconnects, remove it from the clients list
         self.clients.remove(self)
 
+    # track connected clients
     @classmethod
     def dump_stats(cls):
         print 'Clients: %d' % (len(cls.clients))
 
-octoRouter = SockJSRouter(SiteConnectionSocket, '/sockJS', dict())
 
-def start_socket_server():
-
-    Session = sessionmaker(bind=models.engine)
-    session = Session()
-
-    printer_set = {}
-    printer_list = session.query(models.Printer_db).order_by(models.Printer_db.printer_id)
-    for p in printer_list:
-        info = {'printer_id': str(p.printer_id),
-                'url': str(p.url),
-                'x_api_key': str(p.x_api_key),
-                'camera_rotation': str(p.camera_rotation),
-                'printer_name': str(p.printer_name),
-                'printer_type': str(p.printer_type),
-                'horizontal_flip': str(p.horizontal_flip),
-                'vertical_flip': str(p.vertical_flip),
-                }
-        printer_set[str(p.printer_id)] = info
-
-    # 2. Create Tornado web.Application
-    tornado_server = web.Application(octoRouter.urls)
-    #
-    # # 3. Make application listen on port 8080
-    tornado_server.listen(8080)
-    #
-    # # 4. Every 1 second dump current client count
-    ioloop.PeriodicCallback(SiteConnectionSocket.dump_stats, 5000).start()
-    #
-    # # 5. Start IOLoop
-    router_thread = threading.Thread(target=ioloop.IOLoop.instance().start, args=())
-    router_thread.start()
-
-
-
-    for p in printer_set:
-        current_info = printer_set[p]
-        client = client_wrapper(current_info['printer_id'],
-                                current_info['url'],
-                                current_info['x_api_key'],
-                                current_info['camera_rotation'],
-                                current_info['printer_name'],
-                                current_info['printer_type'],
-                                current_info['horizontal_flip'],
-                                current_info['vertical_flip'])
-        available_printers[current_info['printer_id']] = client
-        client_thread = threading.Thread(target=client.connect_client, args=())
-        client_thread.start()
-
-
+# OctoPrint client wrapper object for spinning off a connetion thread and
+# storing necessary database related information
 class client_wrapper(object):
     def __init__(self, printer_id, url, x_api_key, camera_rotation, printer_name, printer_type, horizontal_flip, vertical_flip):
         self.printer_id = printer_id
@@ -115,29 +72,26 @@ class client_wrapper(object):
             return
 
         def on_heartbeat(ws):
-            pass
-            # print("{}: <3").format(self.printer_id)
-            # m = str("{}: <3").format(self.printer_id)
+            to_send = {'printer_id': self.printer_id,
+                                 'message_type': "heartbeat",
+                                 'message': ""}
 
-            # octoRouter.broadcast(octoRouter._connection.clients, m)
-            # aggregate_socket.send("{}: <3").format(self.printer_id)
+            message_queue.put(to_send)
 
         def on_message(ws, internal_type, internal_message):
-
-            # m = str("{}: message, type: {}, message: {!r}").format(self.printer_id, internal_type, internal_message)
 
             to_send = {'printer_id': self.printer_id,
                        'message_type': internal_type,
                        'message': internal_message}
 
-            print(json.dumps(to_send))
-            octoRouter.broadcast(octoRouter._connection.clients, json.dumps(to_send))
+            message_queue.put(to_send)
 
         def on_open(ws):
             print("{}: open").format(self.printer_id)
 
         def on_close(ws):
             print("{}: closed").format(self.printer_id)
+            self.reconnnect_client()
 
         def on_error(ws, error):
             print("{}: error: {}").format(self.printer_id, error)
@@ -167,59 +121,101 @@ class client_wrapper(object):
         self.wait_thread.join(0)
         self.is_connected = False
 
+# create the OctoPrint client router for data broadcast
+octoRouter = SockJSRouter(SiteConnectionSocket, '/sockJS', dict())
+
+def start_socket_server():
+
+    import models
+
+    Session = sessionmaker(bind=models.engine)
+    session = Session()
+
+    printer_set = {}
+    printer_list = session.query(models.Printer_db).order_by(models.Printer_db.printer_id)
+    for p in printer_list:
+        info = {'printer_id': str(p.printer_id),
+                'url': str(p.url),
+                'x_api_key': str(p.x_api_key),
+                'camera_rotation': str(p.camera_rotation),
+                'printer_name': str(p.printer_name),
+                'printer_type': str(p.printer_type),
+                'horizontal_flip': str(p.horizontal_flip),
+                'vertical_flip': str(p.vertical_flip),
+                }
+        printer_set[str(p.printer_id)] = info
 
 
-# with app.app_context():
-#
-#     # 2. Create Tornado web.Application
-#     tornado_server = web.Application(octoRouter.urls)
-#     #
-#     # # 3. Make application listen on port 8080
-#     tornado_server.listen(8081)
-#     #
-#     # # 4. Every 1 second dump current client count
-#     ioloop.PeriodicCallback(SiteConnectionSocket.dump_stats, 5000).start()
-#     #
-#     # # 5. Start IOLoop
-#     router_thread = threading.Thread(target=ioloop.IOLoop.instance().start, args=())
-#     router_thread.start()
-#
-#     # printer_info = Printer_db()
-#     # # printer_list = printer_info.get_printer_id_list()
-#     # printer_set = printer_info.get_on_startup()
-#
-#     printer_set = printer_info.get_on_startup()
-#
-#     # from config import app_config
-#
-#     # app.config['SERVER_NAME'] = 'localhost:6286'
-#     # app.config.from_object(app_config['development'])
-#     # app.config.from_pyfile('config.py')
-#     # database.init_app(app)
-#     # login_manager.init_app(app)
-#     # login_manager.login_message = "You must be logged in to access this page."
-#     # login_manager.login_view = "auth.login"
-#     # CORS(app)
-#
-#     # database.create_all()
-#
-#     # if __name__ == "__main__":
-#         # with app.app_context():
-#
-#     # client1 = client_wrapper("4", "http://155.97.12.124", "octopi4apikey")
-#     # client_thread1 = threading.Thread(target=client1.connect_client, args=())
-#     # #
-#     # client_thread1.start()
-#
-#     for p in printer_set:
-#         current_info = printer_set[p]
-#         client = client_wrapper(current_info['printer_id'],
-#                                 current_info['url'],
-#                                 current_info['x_api_key'],
-#                                 current_info['camera_rotation'],
-#                                 current_info['printer_name'],
-#                                 current_info['printer_type'])
-#         available_printers[current_info['printer_id']] = client
-#         client_thread = threading.Thread(target=client.connect_client, args=())
-#         client_thread.start()
+    # Create Tornado web.Application
+    tornado_server = web.Application(octoRouter.urls)
 
+    #  Make application listen on port 8080
+    tornado_server.listen(8080)
+
+    # Every 1 second dump current client count
+    ioloop.PeriodicCallback(SiteConnectionSocket.dump_stats, 5000).start()
+    #
+    # Start IOLoop
+    router_thread = threading.Thread(target=ioloop.IOLoop.instance().start, args=())
+    router_thread.start()
+
+    # initialize client connections from database information
+    for p in printer_set:
+        current_info = printer_set[p]
+        client = client_wrapper(current_info['printer_id'],
+                                current_info['url'],
+                                current_info['x_api_key'],
+                                current_info['camera_rotation'],
+                                current_info['printer_name'],
+                                current_info['printer_type'],
+                                current_info['horizontal_flip'],
+                                current_info['vertical_flip'])
+        available_printers[current_info['printer_id']] = client
+        client_thread = threading.Thread(target=client.connect_client, args=())
+        client_thread.start()
+        client_threads[current_info['printer_id']] = client_thread
+
+# while there is any information in the message queue, broadcast to all clients
+def send_messages():
+    while True:
+        if message_queue.qsize() > 0:
+            to_send = message_queue.get()
+            octoRouter.broadcast(octoRouter._connection.clients, json.dumps(to_send))
+
+def stop_socket_server():
+    for a in available_printers:
+        current = available_printers[a]
+        current.disconnect_client()
+    for c in client_threads:
+        client_threads[c].join()
+
+def run_main():
+
+    global main_alive, restart_main
+
+    send_messages_thread = threading.Thread(target=send_messages)
+
+    if main_alive == False:
+        try:
+            start_socket_server()
+            send_messages_thread.start()
+            main_alive = True
+            restart_main = False
+        except AssertionError:
+            send_messages_thread.join()
+            send_messages_thread.start()
+            stop_socket_server()
+            restart_main = True
+            main_alive = False
+
+if __name__ == '__main__':
+
+    main_thread = threading.Thread(target=run_main)
+
+    while True:
+        if main_alive == True:
+            pass
+        elif restart_main == True:
+            main_thread.join()
+        else:
+            main_thread.start()

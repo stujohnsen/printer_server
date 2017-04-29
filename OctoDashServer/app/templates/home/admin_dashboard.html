@@ -3,18 +3,20 @@
 {% extends "base.html" %}
 {% block title %}Admin Dashboard{% endblock %}
 {% block body %}
-<div class="intro-header">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="intro-message">
-                    <h1>Admin Dashboard</h1>
-                    <h3>For administrators only!</h3>
-                    <hr class="intro-divider">
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<div class="nav_bar" id="nav_bar"></div>
+<div class="octo_slack_modal" id="octo_slack_modal"></div>
+<div class="snapshot_modal" id="snapshot_modal"></div>
+<div class = "shell">
+    <div class="container" id="container"></div>
+</div><!--./shell-->
+
+<script>
+    //createNavBar();
+    createOctoSlackModal();
+    createSnapshotModal();
+    createSecondLevelObjectEventListeners();
+    startWebSocket("http://155.97.12.120:8080/sockJS");
+    // Snapshot update interval
+    window.setInterval(updateSnapshotViews, 3000);
+</script>
 {% endblock %}

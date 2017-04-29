@@ -4,7 +4,6 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, login_manager
 
-
 class User(UserMixin, db.Model):
     """
     Create an User table
@@ -46,12 +45,10 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<User: {}>'.format(self.username)
 
-
 # Set up user_loader
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
 
 class Role(db.Model):
     """
@@ -64,22 +61,8 @@ class Role(db.Model):
     name = db.Column(db.String(60), unique=True)
     description = db.Column(db.String(200))
     users = db.relationship('User', backref='role',
-                            lazy='dynamic')
+                                lazy='dynamic')
 
     def __repr__(self):
         return '<Role: {}>'.format(self.name)
-
-class Printer(db.Model):
-    __tablename__ = 'printers'
-
-    printer_id = db.Column(db.Integer, primary_key = True)
-    url = db.Column(db.String(512))
-    x_api_key = db.Column(db.String(512))
-    camera_rotation = db.Column(db.Integer, default = 0)
-    vertical_flip = db.Column(db.Boolean, default = False)
-    horizontal_flip = db.Column(db.Boolean, default = False)
-    printer_name = db.Column(db.String(512))
-    printer_type = db.Column(db.String(512))
-
-    def __repr__(self):
-        return '<Printer: %r>' % self.printer_id
+        

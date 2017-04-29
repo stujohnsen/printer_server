@@ -17,6 +17,13 @@ a:hover, .navbar-default .navbar-brand:hover, .navbar-default .navbar-nav>li>a:h
   color: #f8f8f8;
 }
 
+#navbar-logo {
+    height: 50px;
+    display: block;
+    padding: 10px 10px 10px 0;
+    float: left;
+}
+
 footer {
     padding: 50px 0;
 }
@@ -67,8 +74,8 @@ p.copyright {
 }
 
 .intro-header {
-    padding-top: 50px;
-    padding-bottom: 50px;
+    margin-top: 50px;
+    margin-bottom: 50px;
     text-align: center;
     color: #f8f8f8;
     background: url(../img/intro-bg.jpg) no-repeat center center;
@@ -80,6 +87,11 @@ p.copyright {
     position: relative;
     padding-top: 20%;
     padding-bottom: 20%;
+}
+
+.hero-image {
+    margin-top: 50px;
+    width:100%;
 }
 
 .intro-message > h1 {
@@ -132,7 +144,8 @@ p.copyright {
 
 .navbar-default{
     background-color: black;
-    background-color: rgb(40, 40, 40);
+    background-color: rgb(20, 20, 20);
+    border: 0px;
 }
 
 .navbar-default .navbar-brand {
